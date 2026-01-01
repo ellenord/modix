@@ -99,7 +99,6 @@ in
             --advertise-tags=tag:${tags} \
             ${lib.escapeShellArgs cfg.extraUpFlags}
         '';
-      timerConfig.OnUnitInactiveSec = "5min";
     };
     systemd.timers.tailscale-autoconnect.timerConfig = {
       Persistent = true;
