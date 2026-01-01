@@ -83,7 +83,7 @@ in
       };
       script =
         let
-          rawTags = [ "deploy" ] ++ cfg.tags;
+          rawTags = [ "tag:deploy" ] ++ cfg.tags;
           tags = lib.concatStringsSep ",tag:" rawTags;
           tailscaleCmd = "${config.services.tailscale.package}/bin/tailscale";
         in
@@ -96,7 +96,7 @@ in
           # Connect with authkey (tailscale will ignore if already authorized)
           ${tailscaleCmd} up \
             --auth-key=file:${cfg.authKeyFile} \
-            --advertise-tags=tag:${tags} \
+            --advertise-tags=${tags} \
             ${lib.escapeShellArgs cfg.extraUpFlags}
         '';
     };
