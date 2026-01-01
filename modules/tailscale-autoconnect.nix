@@ -79,7 +79,8 @@ in
       };
       script =
         let
-          allTags = [ "deploy" ] ++ cfg.tags;
+          rawTags = [ "deploy" ] ++ cfg.tags;
+          tags = lib.concatStringsSep ",tag:" rawTags;
           tailscaleCmd = "${config.services.tailscale.package}/bin/tailscale";
         in
         {
@@ -90,7 +91,7 @@ in
 
             ${tailscaleCmd} up \
               --auth-key=file:${cfg.authKeyFile} \
-              --advertise-tags=tag:${lib.concatStringsSep ",tag:" allTags} \
+              --advertise-tags=tag:${tags} \
               ${lib.escapeShellArgs cfg.extraUpFlags}
           '';
         };
