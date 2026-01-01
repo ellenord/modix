@@ -59,7 +59,6 @@ in
         "network-online.target"
         "tailscaled.service"
       ];
-      wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
@@ -69,18 +68,24 @@ in
           tailscaleCmd = "${config.services.tailscale.package}/bin/tailscale";
         in
         ''
-          	sleep 60
+          # If already connected, do nothing
+          if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
+            exit 0
+          fi
 
-            # If already connected, do nothing
-            if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
-              exit 0
-            fi
-
-            # Connect with authkey (tailscale will ignore if already authorized)
-            ${tailscaleCmd} up \
-              --auth-key=file:${cfg.authKeyFile} \
-              ${lib.escapeShellArgs cfg.extraUpFlags}
+          # Connect with authkey (tailscale will ignore if already authorized)
+          ${tailscaleCmd} up \
+            --auth-key=file:${cfg.authKeyFile} \
+            ${lib.escapeShellArgs cfg.extraUpFlags}
         '';
+    };
+    systemd.timers.tailscale-autoconnect = {
+      description = "Timer for tailscale autoconnect";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "1min";
+        Unit = "tailscale-autoconnect.service";
+      };
     };
   };
 }
