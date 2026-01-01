@@ -53,11 +53,11 @@ in
       description = "Automatic Tailscale connection";
       requires = [
         "network-online.target"
-        "tailscale.service"
+        "tailscaled.service"
       ];
       after = [
         "network-online.target"
-        "tailscale.service"
+        "tailscaled.service"
       ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
