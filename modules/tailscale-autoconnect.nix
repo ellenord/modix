@@ -92,7 +92,7 @@ in
           # Connect with authkey (tailscale will ignore if already authorized)
           ${tailscaleCmd} up \
             --auth-key=file:${cfg.authKeyFile} \
-            --advertise-tags=${tags} \
+            --advertise-tags=tag:${tags} \
             ${lib.escapeShellArgs cfg.extraUpFlags}
         '';
     };
