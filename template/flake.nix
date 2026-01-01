@@ -11,8 +11,8 @@
       # Export all modules from the modules directory
       nixosModules = {
         default = import ./modules;
-        # Add individual module exports here
-        # example = import ./modules/example.nix;
+        # To export individual modules, access them from the default import:
+        # example = (import ./modules).example;
       };
 
       # Overlay for packages

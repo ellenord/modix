@@ -12,13 +12,13 @@ in
     package = mkOption {
       type = types.package;
       default = pkgs.hello;
-      description = "The package to use for this example module";
+      description = "The package to use for this example module.";
     };
 
     settings = mkOption {
       type = types.attrs;
       default = { };
-      description = "Configuration settings for the example module";
+      description = "Configuration settings for the example module.";
       example = literalExpression ''
         {
           key = "value";
