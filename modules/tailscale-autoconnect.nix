@@ -32,6 +32,20 @@ in
       ];
       description = "Additional flags for tailscale up";
     };
+
+    tags = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [ ];
+      example = [
+        "server"
+        "prod"
+        "gpu"
+      ];
+      description = ''
+        Дополнительные теги для advertise (в формате без "tag:").
+        Тег "deploy" всегда добавляется автоматически и мержится с этими.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -65,19 +79,21 @@ in
       };
       script =
         let
+          allTags = [ "deploy" ] ++ cfg.tags;
           tailscaleCmd = "${config.services.tailscale.package}/bin/tailscale";
         in
-        ''
-          # If already connected, do nothing
-          if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
-            exit 0
-          fi
+        {
+          systemd.services.tailscale-autoconnect.script = ''
+            if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
+              exit 0
+            fi
 
-          # Connect with authkey (tailscale will ignore if already authorized)
-          ${tailscaleCmd} up \
-            --auth-key=file:${cfg.authKeyFile} \
-            ${lib.escapeShellArgs cfg.extraUpFlags}
-        '';
+            ${tailscaleCmd} up \
+              --auth-key=file:${cfg.authKeyFile} \
+              --advertise-tags=tag:${lib.concatStringsSep ",tag:" allTags} \
+              ${lib.escapeShellArgs cfg.extraUpFlags}
+          '';
+        };
     };
     systemd.timers.tailscale-autoconnect = {
       description = "Timer for tailscale autoconnect";
