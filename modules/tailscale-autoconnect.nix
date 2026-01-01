@@ -75,6 +75,10 @@ in
       ];
       serviceConfig = {
         Type = "oneshot";
+        TimeoutStartSec = "60s";
+        Restart = "on-failure";
+        RestartSec = 10;
+        RestartSteps = 5;
         RemainAfterExit = true;
       };
       script =
@@ -95,14 +99,10 @@ in
             --advertise-tags=tag:${tags} \
             ${lib.escapeShellArgs cfg.extraUpFlags}
         '';
+      timerConfig.OnUnitInactiveSec = "5min";
     };
-    systemd.timers.tailscale-autoconnect = {
-      description = "Timer for tailscale autoconnect";
-      wantedBy = [ "timers.target" ];
-      timerConfig = {
-        OnBootSec = "1min";
-        Unit = "tailscale-autoconnect.service";
-      };
+    ssystemd.timers.tailscale-autoconnect.timerConfig = {
+      Persistent = true;
     };
   };
 }
