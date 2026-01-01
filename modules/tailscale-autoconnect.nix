@@ -51,7 +51,7 @@ in
 
     systemd.services.tailscale-autoconnect = {
       description = "Automatic Tailscale connection";
-      wants = [
+      requires = [
         "network-online.target"
         "tailscale.service"
       ];
@@ -69,9 +69,6 @@ in
           tailscaleCmd = "${config.services.tailscale.package}/bin/tailscale";
         in
         ''
-          # Wait for tailscale to start
-          while ! ${tailscaleCmd} status >/dev/null 2>&1; do sleep 1; done
-
           # If already connected, do nothing
           if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
             exit 0
