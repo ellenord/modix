@@ -83,18 +83,18 @@ in
           tags = lib.concatStringsSep ",tag:" rawTags;
           tailscaleCmd = "${config.services.tailscale.package}/bin/tailscale";
         in
-        {
-          systemd.services.tailscale-autoconnect.script = ''
-            if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
-              exit 0
-            fi
+        ''
+          # If already connected, do nothing
+          if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
+            exit 0
+          fi
 
-            ${tailscaleCmd} up \
-              --auth-key=file:${cfg.authKeyFile} \
-              --advertise-tags=tag:${tags} \
-              ${lib.escapeShellArgs cfg.extraUpFlags}
-          '';
-        };
+          # Connect with authkey (tailscale will ignore if already authorized)
+          ${tailscaleCmd} up \
+            --auth-key=file:${cfg.authKeyFile} \
+            --advertise-tags=${tags} \
+            ${lib.escapeShellArgs cfg.extraUpFlags}
+        '';
     };
     systemd.timers.tailscale-autoconnect = {
       description = "Timer for tailscale autoconnect";
