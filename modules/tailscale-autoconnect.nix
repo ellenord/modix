@@ -79,6 +79,7 @@ in
         Restart = "on-failure";
         RestartSec = 10;
         RestartSteps = 5;
+        RestartMaxDelaySec = 60;
         RemainAfterExit = true;
       };
       script =
