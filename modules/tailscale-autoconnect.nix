@@ -69,15 +69,17 @@ in
           tailscaleCmd = "${config.services.tailscale.package}/bin/tailscale";
         in
         ''
-          # If already connected, do nothing
-          if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
-            exit 0
-          fi
+          	sleep 60
 
-          # Connect with authkey (tailscale will ignore if already authorized)
-          ${tailscaleCmd} up \
-            --auth-key=file:${cfg.authKeyFile} \
-            ${lib.escapeShellArgs cfg.extraUpFlags}
+            # If already connected, do nothing
+            if ${tailscaleCmd} status --json | grep -q '"BackendState":"Running"'; then
+              exit 0
+            fi
+
+            # Connect with authkey (tailscale will ignore if already authorized)
+            ${tailscaleCmd} up \
+              --auth-key=file:${cfg.authKeyFile} \
+              ${lib.escapeShellArgs cfg.extraUpFlags}
         '';
     };
   };
