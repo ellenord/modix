@@ -101,7 +101,7 @@ in
         '';
       timerConfig.OnUnitInactiveSec = "5min";
     };
-    ssystemd.timers.tailscale-autoconnect.timerConfig = {
+    systemd.timers.tailscale-autoconnect.timerConfig = {
       Persistent = true;
     };
   };
